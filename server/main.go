@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	templates = template.Must(template.ParseGlob("../templates/*.html")) // Charger les templates à l'init
+	templates = template.Must(template.ParseGlob("templates/*.html")) // Charger les templates à l'init
 }
 
 func main() {
