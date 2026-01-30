@@ -22,9 +22,15 @@ func init() {
 }
 
 func main() {
+	// Get port from environment variable, default to 8081 if not set
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+
 	fmt.Println(
 		"=== Serveur sOPown3d - Gestion Commandes ===\n" +
-			"URL: http://127.0.0.1:" + os.Getenv("PORT") + "\n" +
+			"URL: http://127.0.0.1:" + port + "\n" +
 			"Usage académique uniquement\n" +
 			"============================================")
 
@@ -33,7 +39,7 @@ func main() {
 	http.HandleFunc("/command", handleSendCommand)
 	http.HandleFunc("/", handleDashboard)
 
-	err := http.ListenAndServe("127.0.0.1:"+os.Getenv("PORT"), nil)
+	err := http.ListenAndServe("127.0.0.1:"+port, nil)
 	if err != nil {
 		fmt.Println("Erreur:", err)
 	}

