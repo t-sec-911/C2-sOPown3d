@@ -16,3 +16,8 @@ type DashboardData struct {
 	DefaultAgent string
 	output       string
 }
+
+type JitterConfig struct {
+	MinSeconds float64 // Minimum jitter in seconds
+	MaxSeconds float64 // Maximum jitter in seconds
+}
