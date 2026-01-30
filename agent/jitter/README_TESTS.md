@@ -64,11 +64,11 @@ go test -bench=. -benchmem
 
 ### Validation Results
 ```
-✅ All 10 test cases passing
-✅ 100% code coverage
-✅ Gaussian distribution verified (95.54% within 2σ)
-✅ 100% uniqueness in sample generation
-✅ Mean accuracy within 0.11% of expected value
+[PASS] All 10 test cases passing
+[PASS] 100% code coverage
+[PASS] Gaussian distribution verified (95.54% within 2σ)
+[PASS] 100% uniqueness in sample generation
+[PASS] Mean accuracy within 0.11% of expected value
 ```
 
 ### Performance Metrics
@@ -82,14 +82,14 @@ Allocs/op:  0
 ## Key Statistical Validations
 
 ### Gaussian Distribution (5-15s range, 10000 samples)
-- **Sample Mean**: 9.9889s (expected: 10.0000s) ✅
-- **Standard Deviation**: 1.6501s (expected: 1.67s) ✅
-- **Within 2σ**: 95.54% (expected: ~95%) ✅
+- **Sample Mean**: 9.9889s (expected: 10.0000s) - PASS
+- **Standard Deviation**: 1.6501s (expected: 1.67s) - PASS
+- **Within 2σ**: 95.54% (expected: ~95%) - PASS
 
 ### Boundary Testing (1-5s range, 1000 samples)
-- **All samples within bounds**: 100% ✅
-- **No values below min**: 0% ✅
-- **No values above max**: 0% ✅
+- **All samples within bounds**: 100% - PASS
+- **No values below min**: 0% - PASS
+- **No values above max**: 0% - PASS
 
 ## How to Add More Tests
 
