@@ -47,7 +47,7 @@ func main() {
 	fmt.Println(jitterCalc.GetStats())
 	fmt.Println()
 
-  //setupPersistence()
+  setupPersistence()
 
   fmt.Printf("Agent ID: %s\n", info.Hostname)
   fmt.Println("En attente de commandes...")

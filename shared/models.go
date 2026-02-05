@@ -13,8 +13,9 @@ type Command struct {
 }
 
 type DashboardData struct {
+	AgentInfo    string // Voir avec Robin pour le hash unique
+	Output       string
 	DefaultAgent string
-	output       string
 }
 
 type JitterConfig struct {
