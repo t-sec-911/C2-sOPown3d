@@ -93,6 +93,8 @@
         <button onclick="sendCommand()">🚀 Envoyer la commande</button>
     </div>
 
+    <div id="output" style="background:#1e1e1e;color:#00ff00;padding:20px;font-family:monospace;"></div>
+
     <div id="response">En attente...</div>
 
     <h3>📋 Commandes de test:</h3>
@@ -158,12 +160,21 @@
                 'Payload: ' + payload + '\n\n' +
                 'L\'agent récupérera la commande au prochain beacon.';
 
+            console.log("BOOP")
         } catch (error) {
             responseDiv.innerHTML = '❌ Erreur: ' + error;
         }
     }
 
     document.getElementById('agentId').focus();
+
+    const agentID = 'Nicolass-MacBook-Pro.local';
+    const ws = new WebSocket(`ws://localhost:8081/websocket?agent=${agentID}`);
+
+    ws.onmessage = (event) => {
+        console.log("ws.onMessage event :", event)
+        document.getElementById('output').innerHTML = event.data + '<br>';
+    }
 </script>
 </body>
 </html>

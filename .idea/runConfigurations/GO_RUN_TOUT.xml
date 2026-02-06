@@ -1,7 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="GO RUN TOUT" type="CompoundRunConfigurationType">
-    <toRun name="build agent" type="GoApplicationRunConfiguration" />
-    <toRun name="build server" type="GoApplicationRunConfiguration" />
-    <method v="2" />
-  </configuration>
-</component>
