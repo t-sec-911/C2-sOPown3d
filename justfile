@@ -7,8 +7,8 @@ set shell := ["bash", "-c"]
 # Variables
 BUILD_DIR := "build"
 MODULE := "sOPown3d"
-AGENT_MAIN := "agent/main.go"
-SERVER_MAIN := "server/main.go"
+AGENT_MAIN := "cmd/agent/main.go"
+SERVER_MAIN := "cmd/server/main.go"
 
 # Default recipe - show help
 default:

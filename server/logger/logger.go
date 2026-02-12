@@ -90,4 +90,5 @@ const (
 	CategoryWarning    = "⚠️"
 	CategoryError      = "❌"
 	CategorySuccess    = "✓"
+	CategoryWebSocket  = "WS"
 )
