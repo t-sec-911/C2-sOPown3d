@@ -1,14 +1,14 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="build server" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="sOPown3d" />
-    <working_directory value="$PROJECT_DIR$/server" />
+    <working_directory value="$PROJECT_DIR$" />
     <envs>
       <env name="PORT" value="8081" />
     </envs>
     <kind value="PACKAGE" />
     <package value="sOPown3d/server" />
     <directory value="$PROJECT_DIR$" />
-    <filePath value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$/../C2-sOPown3d|$PROJECT_DIR$/server/main.go" />
     <pty_enabled value="true" />
     <method v="2" />
   </configuration>

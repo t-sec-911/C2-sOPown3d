@@ -14,6 +14,8 @@ import (
 	"sOPown3d/server/storage"
 	"sOPown3d/server/tasks"
 	"sOPown3d/shared"
+
+	"github.com/gorilla/websocket"
 )
 
 var (
@@ -24,6 +26,12 @@ var (
 	store            storage.Storage
 	activityChecker  *tasks.ActivityChecker
 	cleanupScheduler *tasks.CleanupScheduler
+	connectionCount = 0
+
+	upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true }, // TODO : Wtf is a websocket Upgrader
+	}
+	wsClients = make(map[string]*websocket.Conn) // init du client pour le webSocket
 )
 
 func init() {
@@ -92,6 +100,7 @@ func main() {
 	http.HandleFunc("/beacon", handleBeacon)
 	http.HandleFunc("/ingest", handleIngest)
 	http.HandleFunc("/command", handleSendCommand)
+	http.HandleFunc("/websocket", handleWebSocket)
 	http.HandleFunc("/", handleDashboard)
 
 	// API routes (will be implemented in Phase 6)
@@ -114,13 +123,16 @@ func main() {
 
 func handleDashboard(w http.ResponseWriter, _ *http.Request) {
 	data := shared.DashboardData{
-		DefaultAgent: "AgentID à voir comment recupérer dynamiquement",
+		AgentInfo:    "AgentID à voir comment recupérer dynamiquement", // Nul
+		DefaultAgent: "Nicolass-MacBook-Pro.local",
 	}
 
 	err := templates.ExecuteTemplate(w, "dashboard.html", data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		log.Error(logger.CategoryError, "Template error: %v", err)
+		fmt.Println("Erreur template:", err)
+		return
 	}
 }
 

