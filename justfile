@@ -228,6 +228,59 @@ check:
     @echo "=========================================="
 
 # ========================================
+# Docker & Database
+# ========================================
+
+# Start PostgreSQL Docker container
+docker-up:
+    @echo "Starting PostgreSQL container..."
+    @docker-compose up -d
+    @echo "Waiting for PostgreSQL to be ready..."
+    @sleep 3
+    @echo "✓ PostgreSQL is running on localhost:5432"
+    @echo ""
+    @echo "Database credentials:"
+    @echo "  Host: localhost"
+    @echo "  Port: 5432"
+    @echo "  User: c2user"
+    @echo "  Password: c2pass"
+    @echo "  Database: c2_db"
+
+# Stop PostgreSQL container
+docker-down:
+    @echo "Stopping PostgreSQL container..."
+    @docker-compose down
+    @echo "✓ PostgreSQL stopped"
+
+# View PostgreSQL logs
+docker-logs:
+    @docker-compose logs -f postgres
+
+# Reset database (delete all data)
+docker-reset:
+    @echo "⚠️  Warning: This will delete all database data!"
+    @echo "Resetting database..."
+    @docker-compose down -v
+    @docker-compose up -d
+    @sleep 3
+    @echo "✓ Database reset complete"
+
+# Connect to PostgreSQL CLI
+docker-psql:
+    @docker-compose exec postgres psql -U c2user -d c2_db
+
+# Check Docker container status
+docker-status:
+    @echo "Docker container status:"
+    @docker-compose ps
+
+# Run tests with Docker database
+test-integration:
+    @echo "Running integration tests with PostgreSQL..."
+    @echo "Make sure Docker is running: just docker-up"
+    @go test -v -tags=integration ./server/...
+
+# ========================================
 # Dependencies & Utilities
 # ========================================
 
@@ -295,14 +348,26 @@ help:
     @echo "  just dev-integration          Test server + agent together"
     @echo "  just check                    Run pre-commit checks"
     @echo ""
+    @echo "DOCKER & DATABASE:"
+    @echo "  just docker-up                Start PostgreSQL container"
+    @echo "  just docker-down              Stop PostgreSQL container"
+    @echo "  just docker-logs              View PostgreSQL logs"
+    @echo "  just docker-reset             Reset database (delete all data)"
+    @echo "  just docker-psql              Connect to PostgreSQL CLI"
+    @echo "  just docker-status            Check Docker status"
+    @echo ""
     @echo "UTILITIES:"
     @echo "  just fmt                      Format code"
     @echo "  just lint                     Run linter"
     @echo "  just info                     Show project info"
     @echo "  just help                     Show this help message"
     @echo ""
+    @echo "DOCUMENTATION:"
+    @echo "  DATABASE_SETUP.md             PostgreSQL setup and configuration"
+    @echo "  USAGE.md                      Quick usage guide and examples"
+    @echo ""
     @echo "Examples:"
-    @echo "  just build && just dev-server"
+    @echo "  just docker-up && DATABASE_URL=\"postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable\" just dev-server"
     @echo "  just check                    (before committing)"
     @echo "  just build-all                (before release)"
     @echo "=========================================="

@@ -25,6 +25,7 @@ build/
 
 # Configuration files with secrets
 config.yaml
+config.json
 test_config.yaml
 *.key
 *.pem
@@ -34,6 +35,9 @@ test_config.yaml
 
 # env file
 .env
+
+# Docker volumes
+postgres_data/
 
 # Editor/IDE
 .idea/

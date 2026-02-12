@@ -1,0 +1,23 @@
+---
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: sopown3d-postgres
+    environment:
+      POSTGRES_USER: c2user
+      POSTGRES_PASSWORD: c2pass
+      POSTGRES_DB: c2_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U c2user -d c2_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
