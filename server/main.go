@@ -13,7 +13,7 @@ import (
 	"sOPown3d/server/logger"
 	"sOPown3d/server/storage"
 	"sOPown3d/server/tasks"
-	"sOPown3d/shared"
+	"sOPown3d/pkg/shared"
 
 	"github.com/gorilla/websocket"
 )
