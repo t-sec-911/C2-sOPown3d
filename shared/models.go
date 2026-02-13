@@ -14,3 +14,8 @@ type Command struct {
 	Action  string `json:"action"`
 	Payload string `json:"payload,omitempty"`
 }
+
+// Message chiffré pour les communications
+type EncryptedMessage struct {
+	Data string `json:"data"` // Données chiffrées en base64
+}

