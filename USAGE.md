@@ -4,21 +4,19 @@ Quick reference guide for using the PostgreSQL-enabled C2 server.
 
 ## Quick Start
 
+### Localhost Testing (Same Machine)
+
 ### 1. Start PostgreSQL Database
 
 ```bash
 just docker-up
 ```
 
-### 2. Start Server
+### 2. Start Server (Localhost Only)
 
 ```bash
-# With environment variable
-DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" just dev-server
-
-# Or build and run
-just build
-DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" ./build/darwin/server
+# Localhost-only mode (secure)
+SERVER_HOST=127.0.0.1 DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" just dev-server
 ```
 
 ### 3. Start Agent
@@ -26,11 +24,62 @@ DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" ./b
 ```bash
 # In another terminal
 just dev-agent
+# Uses default: http://127.0.0.1:8080
 ```
 
 ### 4. Access Dashboard
 
 Open your browser: http://localhost:8080
+
+---
+
+## Network Deployment (Windows VM)
+
+For connecting Windows VM agent to your local computer server:
+
+### 1. Find Your Computer's IP
+
+```bash
+# macOS
+$ ipconfig getifaddr en0
+192.168.1.100
+
+# Linux
+$ hostname -I | awk '{print $1}'
+```
+
+### 2. Start Server (Network Mode)
+
+```bash
+# Network-accessible mode
+SERVER_HOST=0.0.0.0 DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" just dev-server
+```
+
+**Server logs will show:**
+```
+[WARN] ⚠️ Server binding to 0.0.0.0 - ACCESSIBLE FROM NETWORK
+[INFO] 🌐 Server listening on http://0.0.0.0:8080 (all network interfaces)
+```
+
+### 3. Build Windows Agent
+
+```bash
+$ GOOS=windows GOARCH=amd64 go build -o agent.exe cmd/agent/main.go
+```
+
+### 4. Run Agent on Windows VM
+
+```cmd
+C:\> agent.exe -server http://192.168.1.100:8080
+```
+
+**Replace `192.168.1.100`** with your computer's actual IP!
+
+### 5. Verify Connection
+
+Dashboard should show Windows VM agent as active.
+
+**See NETWORK_SETUP.md for detailed deployment guide!**
 
 ## Dashboard Features
 

@@ -11,7 +11,8 @@
   },
   "server": {
     "port": "8080",
-    "host": "127.0.0.1"
+    "host": "0.0.0.0",
+    "_comment_host": "Use 0.0.0.0 for network access (Windows VM), or 127.0.0.1 for localhost-only (secure)"
   },
   "features": {
     "agent_inactive_threshold_minutes": 5,

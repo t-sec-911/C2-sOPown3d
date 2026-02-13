@@ -228,6 +228,39 @@ check:
     @echo "=========================================="
 
 # ========================================
+# Network Utilities
+# ========================================
+
+# Get local IP address for network deployment
+get-local-ip:
+    @echo "Detecting local IP address..."
+    @echo ""
+    @if command -v ipconfig >/dev/null 2>&1; then \
+        echo "Local IP (WiFi):"; \
+        ipconfig getifaddr en0 2>/dev/null || echo "  Not connected"; \
+        echo "Local IP (Ethernet):"; \
+        ipconfig getifaddr en1 2>/dev/null || echo "  Not connected"; \
+    elif command -v hostname >/dev/null 2>&1; then \
+        echo "Local IP:"; \
+        hostname -I 2>/dev/null | awk '{print "  " $$1}' || echo "  Unable to detect"; \
+    else \
+        echo "Local IP:"; \
+        ifconfig 2>/dev/null | grep "inet " | grep -v 127.0.0.1 | awk '{print "  " $$2}' || echo "  Unable to detect"; \
+    fi
+    @echo ""
+    @echo "Use this IP when running agent on Windows VM:"
+    @echo "  agent.exe -server http://YOUR_IP:8080"
+
+# Start server in network mode (accessible from VMs/other machines)
+dev-server-network:
+    @echo "Starting server in NETWORK mode..."
+    @echo "⚠️  WARNING: Server will be accessible from your network!"
+    @echo ""
+    @just get-local-ip
+    @echo ""
+    @SERVER_HOST=0.0.0.0 DATABASE_URL="postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable" go run cmd/server/main.go
+
+# ========================================
 # Docker & Database
 # ========================================
 
@@ -342,11 +375,16 @@ help:
     @echo "  just test-full                Complete test suite (like test.sh)"
     @echo ""
     @echo "DEVELOPMENT:"
-    @echo "  just dev-server               Run server on port 8080"
+    @echo "  just dev-server               Run server (localhost only)"
+    @echo "  just dev-server-network       Run server (network accessible)"
     @echo "  just dev-agent                Run agent with 1-2s jitter"
     @echo "  just dev-agent 5 15           Run agent with 5-15s jitter"
     @echo "  just dev-integration          Test server + agent together"
     @echo "  just check                    Run pre-commit checks"
+    @echo ""
+    @echo "NETWORK:"
+    @echo "  just get-local-ip             Show your local IP address"
+    @echo "  just dev-server-network       Start server (network mode)"
     @echo ""
     @echo "DOCKER & DATABASE:"
     @echo "  just docker-up                Start PostgreSQL container"
@@ -365,6 +403,7 @@ help:
     @echo "DOCUMENTATION:"
     @echo "  DATABASE_SETUP.md             PostgreSQL setup and configuration"
     @echo "  USAGE.md                      Quick usage guide and examples"
+    @echo "  NETWORK_SETUP.md              Windows VM network deployment guide"
     @echo ""
     @echo "Examples:"
     @echo "  just docker-up && DATABASE_URL=\"postgres://c2user:c2pass@localhost:5433/c2_db?sslmode=disable\" just dev-server"

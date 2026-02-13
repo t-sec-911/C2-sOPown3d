@@ -77,7 +77,20 @@ func main() {
 		return
 	}
 
-	lgr.Info(logger.CategoryAPI, "Server listening on http://%s:%s", cfg.Server.Host, cfg.Server.Port)
+	// Security warning if binding to all interfaces
+	switch cfg.Server.Host {
+	case "0.0.0.0":
+		lgr.Warn(logger.CategoryWarning, "Server binding to 0.0.0.0 - ACCESSIBLE FROM NETWORK")
+		lgr.Warn(logger.CategoryWarning, "Anyone on your network can connect! Use 127.0.0.1 for localhost-only")
+		lgr.Info(logger.CategoryAPI, "Server listening on http://0.0.0.0:%s (all network interfaces)", cfg.Server.Port)
+		lgr.Info(logger.CategoryAPI, "Access via: http://<YOUR_LOCAL_IP>:%s", cfg.Server.Port)
+	case "127.0.0.1":
+		lgr.Info(logger.CategoryAPI, "Server listening on http://127.0.0.1:%s (localhost only)", cfg.Server.Port)
+		lgr.Info(logger.CategoryAPI, "To accept network connections, set SERVER_HOST=0.0.0.0")
+	default:
+		lgr.Info(logger.CategoryAPI, "Server listening on http://%s:%s", cfg.Server.Host, cfg.Server.Port)
+	}
+
 	lgr.Info(logger.CategoryBackground, "Background tasks started")
 	lgr.Info(logger.CategorySuccess, "Ready to receive agent beacons")
 

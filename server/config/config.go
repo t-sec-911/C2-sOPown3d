@@ -62,7 +62,7 @@ func Load() (*Config, error) {
 		},
 		Server: ServerConfig{
 			Port: "8080",
-			Host: "127.0.0.1",
+			Host: "0.0.0.0", // Default to accept network connections (can be changed to 127.0.0.1 for localhost-only)
 		},
 		Features: FeatureConfig{
 			AgentInactiveThresholdMinutes: 5,
