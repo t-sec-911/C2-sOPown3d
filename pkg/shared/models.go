@@ -25,7 +25,6 @@ type JitterConfig struct {
 	MaxSeconds float64
 }
 
-// Storage models
 type Agent struct {
 	AgentID   string    `json:"agent_id"`
 	Hostname  string    `json:"hostname"`

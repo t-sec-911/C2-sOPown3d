@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// LogLevel represents the severity of a log message
 type LogLevel int
 
 const (
@@ -15,12 +14,10 @@ const (
 	ERROR
 )
 
-// Logger provides structured logging with emoji categories
 type Logger struct {
 	level LogLevel
 }
 
-// New creates a new logger with the specified level
 func New(level string) *Logger {
 	var l LogLevel
 	switch level {
@@ -38,12 +35,10 @@ func New(level string) *Logger {
 	return &Logger{level: l}
 }
 
-// timestamp returns current timestamp in a readable format
 func timestamp() string {
 	return time.Now().Format("2006-01-02 15:04:05")
 }
 
-// Info logs an informational message with category emoji
 func (l *Logger) Info(category, format string, args ...interface{}) {
 	if l.level <= INFO {
 		message := fmt.Sprintf(format, args...)
@@ -51,7 +46,6 @@ func (l *Logger) Info(category, format string, args ...interface{}) {
 	}
 }
 
-// Warn logs a warning message with category emoji
 func (l *Logger) Warn(category, format string, args ...interface{}) {
 	if l.level <= WARN {
 		message := fmt.Sprintf(format, args...)
@@ -59,7 +53,6 @@ func (l *Logger) Warn(category, format string, args ...interface{}) {
 	}
 }
 
-// Error logs an error message with category emoji
 func (l *Logger) Error(category, format string, args ...interface{}) {
 	if l.level <= ERROR {
 		message := fmt.Sprintf(format, args...)
@@ -67,7 +60,6 @@ func (l *Logger) Error(category, format string, args ...interface{}) {
 	}
 }
 
-// Debug logs a debug message (only shown at DEBUG level)
 func (l *Logger) Debug(category, format string, args ...interface{}) {
 	if l.level <= DEBUG {
 		message := fmt.Sprintf(format, args...)
@@ -77,16 +69,16 @@ func (l *Logger) Debug(category, format string, args ...interface{}) {
 
 // Standard category emojis for consistency
 const (
-	CategoryStartup    = "🚀"
-	CategoryDatabase   = "🔌"
-	CategoryBeacon     = "📥"
-	CategoryCommand    = "📤"
-	CategoryExecution  = "📝"
-	CategoryBackground = "🔍"
-	CategoryStorage    = "💾"
-	CategorySync       = "🔄"
-	CategoryCleanup    = "🧹"
-	CategoryAPI        = "🌐"
+	CategoryStartup    = "[StartUp]"
+	CategoryDatabase   = "[DB]"
+	CategoryBeacon     = "[Beacon]"
+	CategoryCommand    = "[CMD]"
+	CategoryExecution  = "[Execution]"
+	CategoryBackground = "[Background]"
+	CategoryStorage    = "[Storage]"
+	CategorySync       = "[Sync]"
+	CategoryCleanup    = "[Cleanup]"
+	CategoryAPI        = "[API]"
 	CategoryWarning    = "⚠️"
 	CategoryError      = "❌"
 	CategorySuccess    = "✓"
