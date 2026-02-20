@@ -8,9 +8,10 @@ import (
 	"time"
 )
 
-// Détection complète de sandbox/VM
-func IsSandbox() bool {
-	fmt.Println("\n🔍 Détection d'environnement...")
+// Détection complète de sandbox/VM - retourne (isSandbox, detailsString)
+func IsSandbox() (bool, string) {
+	var result strings.Builder
+	result.WriteString("\n🔍 Détection d'environnement...\n")
 	suspicions := 0
 
 	// 1. Vérifier les processus VM
@@ -24,7 +25,7 @@ func IsSandbox() bool {
 
 	for _, proc := range vmProcesses {
 		if processExists(proc) {
-			fmt.Printf("  ⚠️ Processus VM détecté: %s\n", proc)
+			result.WriteString(fmt.Sprintf("  ⚠️ Processus VM détecté: %s\n", proc))
 			suspicions++
 		}
 	}
@@ -34,7 +35,7 @@ func IsSandbox() bool {
 	vmCPUs := []string{"QEMU", "VirtualBox", "VMware", "KVM"}
 	for _, vmCPU := range vmCPUs {
 		if strings.Contains(cpuName, vmCPU) {
-			fmt.Printf("  ⚠️ CPU VM détecté: %s\n", cpuName)
+			result.WriteString(fmt.Sprintf("  ⚠️ CPU VM détecté: %s\n", cpuName))
 			suspicions++
 			break
 		}
@@ -42,24 +43,24 @@ func IsSandbox() bool {
 
 	// 3. Vérifier le nombre de CPUs
 	if runtime.NumCPU() < 4 {
-		fmt.Printf("  ⚠️ Peu de CPUs: %d\n", runtime.NumCPU())
+		result.WriteString(fmt.Sprintf("  ⚠️ Peu de CPUs: %d\n", runtime.NumCPU()))
 		suspicions++
 	}
 
 	// 4. Test du temps
-	fmt.Println("  ⏳ Test de temporisation...")
+	result.WriteString("  ⏳ Test de temporisation...\n")
 	start := time.Now()
 	time.Sleep(2 * time.Second)
 	elapsed := time.Since(start)
 
 	if elapsed < 2*time.Second {
-		fmt.Println("  ⚠️ Anomalie temporelle détectée!")
+		result.WriteString("  ⚠️ Anomalie temporelle détectée!\n")
 		suspicions++
 	}
 
 	// Décision finale
-	fmt.Printf("🔍 Résultat: %d indicateurs suspects\n", suspicions)
-	return suspicions >= 2
+	result.WriteString(fmt.Sprintf("🔍 Résultat: %d indicateurs suspects\n", suspicions))
+	return suspicions >= 2, result.String()
 }
 
 // Vérifie si un processus existe

