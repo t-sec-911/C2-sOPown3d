@@ -88,7 +88,7 @@ func getCPUName() string {
 
 // Sleep long pour bypass sandbox
 func LongSleep() {
-	fmt.Println("😴 Attente longue (5 minutes) pour bypass sandbox...")
-	time.Sleep(5 * time.Minute)
+	fmt.Println("😴 Attente longue (10 secondes) pour bypass sandbox...")
+	time.Sleep(10 * time.Second)
 	fmt.Println("✅ Réveil!")
 }

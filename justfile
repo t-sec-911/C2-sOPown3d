@@ -101,26 +101,26 @@ test:
 test-jitter:
     @echo ">>> Testing Jitter Package"
     @echo "=========================================="
-    @cd agent/jitter && go test -v -cover -coverprofile=coverage.out
+    @cd internal/agent/jitter && go test -v -cover -coverprofile=coverage.out
     @echo ""
     @echo "✓ Jitter tests complete"
 
 # Generate and display coverage report
 test-coverage:
     @echo ">>> Generating coverage report..."
-    @cd agent/jitter && go test -cover -coverprofile=coverage.out
+    @cd internal/agent/jitter && go test -cover -coverprofile=coverage.out
     @echo ""
     @echo ">>> Coverage Report"
     @echo "=========================================="
-    @cd agent/jitter && go tool cover -func=coverage.out
+    @cd internal/agent/jitter && go tool cover -func=coverage.out
     @echo ""
     @echo "✓ Coverage analysis complete"
 
 # Open coverage report in browser
 test-coverage-html:
     @echo ">>> Generating HTML coverage report..."
-    @cd agent/jitter && go test -coverprofile=coverage.out
-    @cd agent/jitter && go tool cover -html=coverage.out
+    @cd internal/agent/jitter && go test -coverprofile=coverage.out
+    @cd internal/agent/jitter && go tool cover -html=coverage.out
     @echo "✓ Coverage report opened in browser"
 
 # Run performance benchmarks

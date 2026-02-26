@@ -66,10 +66,12 @@ func New(cfg *config.Config, lgr *logger.Logger, store storage.Storage, activity
 
 	addr := fmt.Sprintf("%s:%s", cfg.Server.Host, cfg.Server.Port)
 
-	return &http.Server{
+	srv := &http.Server{
 		Addr:         addr,
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 10 * time.Second,
-	}, nil
+	}
+
+	return srv, nil
 }

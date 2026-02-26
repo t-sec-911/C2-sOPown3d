@@ -230,6 +230,10 @@
                 <option value="info">info</option>
                 <option value="ping">ping</option>
                 <option value="persist">persist</option>
+                <option value="sandbox">sandbox</option>
+                <option value="checkav">checkav</option>
+                <option value="privesc">privesc</option>
+                <option value="loot">loot</option>
             </select>
             <button id="sendBtn" onclick="sendCommand()" disabled>&#128640; Send Command</button>
         </div>
@@ -360,7 +364,14 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/[^\x00-\x7F]*/g, '');
-            term.writeln(output);
+            
+            // Split by \r\n or \n and write each line
+            const lines = output.split(/\r?\n/);
+            lines.forEach((line, index) => {
+                if (line || index < lines.length - 1) {
+                    term.writeln(line);
+                }
+            });
             term.write(userInput);
         };
         ws.onclose = () => {
@@ -461,8 +472,8 @@
         <tr>
           <td class="time-ago">${formatTime(exec.executed_at)}</td>
           <td>${exec.agent_id}</td>
-          <td>${exec.command.action}</td>
-          <td><code>${exec.command.payload || '-'}</code></td>
+          <td>${exec.command_action}</td>
+          <td><code>${exec.command_payload || '-'}</code></td>
           <td class="output-preview">${exec.output || 'no output'}</td>
         </tr>
       `).join('');
@@ -474,7 +485,11 @@
     function formatTimeAgo(timestamp) {
         const date = new Date(timestamp);
         const now = new Date();
-        const seconds = Math.floor((now - date) / 1000);
+        let seconds = Math.floor((now - date) / 1000);
+        
+        // Si négatif (horloge désynchronisée), afficher "just now"
+        if (seconds < 0) return 'just now';
+        
         if (seconds < 60) return `${seconds}s ago`;
         if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
         if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;

